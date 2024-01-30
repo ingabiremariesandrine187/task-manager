@@ -44,17 +44,9 @@ signupBtn.addEventListener("click", () => {
     .then((userCredential) => {
       const user = userCredential.user;
       const uid = user.uid;
-      user
-        .sendEmailVerification()
-        .then(() => {
-          alert(
-            "Verification email sent. Please check your inbox and verify your email before signing in."
-          );
-        })
-        .catch((error) => {
-          alert("Error sending verification email: " + error.message);
-        });
-      console.log("User data saved to Firestore");
+      if(user){
+        location.href = "signout.html";
+      }
       firestore.collection("users").doc(uid).set({
         name: name,
         username: username,
@@ -69,20 +61,17 @@ signupBtn.addEventListener("click", () => {
     });
 });
 
+
 const loginBtn = document.querySelector(".loginbtn");
 
 loginBtn.addEventListener("click", () => {
-  const email = document.querySelector("#inUsr").value.trim();
   const password = document.querySelector("#inPass").value;
   auth
     .signInWithEmailAndPassword(email, password)
     .then((userCredential) => {
       const user = userCredential.user;
-      if (user.emailVerified) {
-        console.log("User is signed in with a verified email.");
+      if (user) {
         location.href = "signout.html";
-      } else {
-        alert("Please verify your email before signing in.");
       }
     })
     .catch((error) => {
@@ -90,23 +79,4 @@ loginBtn.addEventListener("click", () => {
     });
 });
 
-const forgotBtn = document.querySelector(".forgotbtn");
 
-forgotBtn.addEventListener("click", () => {
-  const emailForReset = document.querySelector("#forgotinp").value.trim();
-  if (emailForReset.length > 0) {
-    auth
-      .sendPasswordResetEmail(emailForReset)
-      .then(() => {
-        alert(
-          "Password reset email sent. Please check your inbox to reset your password."
-        );
-        signupForm.style.display = "none";
-        loginForm.style.display = "block";
-        forgotForm.style.display = "none";
-      })
-      .catch((error) => {
-        alert("Error sending password reset email: " + error.message);
-      });
-  }
-});
